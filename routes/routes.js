@@ -26,7 +26,6 @@ router.post(
             const error = new Error('An error occurred.');
             return next(error);
           }
-          console.log("line 30")
           req.login(
             user,
             { session: false },
