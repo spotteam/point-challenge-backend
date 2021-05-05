@@ -1,10 +1,15 @@
 const express = require('express')
 const logger = require('morgan')
+const passport = require('passport')
 const bodyParser = require('body-parser')
 const { User, Post } = require('./models')
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema, GraphQLScalarType } = require('graphql');
 const cors = require('cors')
+
+require('./auth/auth')
+const routes = require('./routes/routes')
+const secureRoutes = require('./routes/secure-routes')
  
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -81,5 +86,13 @@ app.use('/graphql', graphqlHTTP({
   rootValue: root,
   graphiql: true,
 }));
+
+app.use('/', routes)
+app.use('/tweet', passport.authenticate('jwt', { session: false }), secureRoutes)
+
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.json({ error: err });
+});
 
 app.listen(8080, function() { console.log('Node server listening on port 8080')})
