@@ -1,15 +1,13 @@
-const express = require('express')
-const logger = require('morgan')
-const passport = require('passport')
-const bodyParser = require('body-parser')
-const { User, Post } = require('./models')
+const express = require('express');
+const passport = require('passport');
+const { User, Post } = require('./models');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema, GraphQLScalarType } = require('graphql');
-const cors = require('cors')
+const cors = require('cors');
 
-require('./auth/auth')
-const routes = require('./routes/routes')
-const secureRoutes = require('./routes/secure-routes')
+require('./auth/auth');
+const routes = require('./routes/routes');
+const secureRoutes = require('./routes/secure-routes');
  
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -19,6 +17,8 @@ var schema = buildSchema(`
 
   type Mutation {
     createPost(userId: Int, content: String): Post
+    editPost(userId: Int, postId: Int, content: String): Post
+    deletePost(userId: Int, postId: Int): Int
     createUser(email: String, password: String): User
   }
 
@@ -37,6 +37,7 @@ var schema = buildSchema(`
   }
 `);
 
+// Used to define Date type in GraphQL
 const resolverMap = {
   Date: new GraphQLScalarType({
     name: 'Date',
@@ -54,7 +55,7 @@ const resolverMap = {
       return null;
     },
   }),
-}
+};
  
 // The root provides a resolver function for each API endpoint
 var root = {
@@ -66,20 +67,40 @@ var root = {
     });
   },
   createPost: async ({ userId, content }) => {
-    var post = await Post.create({userId: userId, content: content})
-    console.log(post)
-    return post;
+    return await Post.create({userId: userId, content: content});
+  },
+  editPost: async ({ userId, postId, content }) => {
+    await Post.update(
+      { content: content },
+      {
+        where: {
+          id: postId,
+          userId: userId
+        },
+        returning: true,
+        plain: true,
+      }
+    ).catch(e => {
+      // Swallow errors
+      // In practice we'd want to log and monitor these errors and maybe
+      // present the user with an error message
+    });
+    return await Post.findOne({ where: { id: postId, userId: userId } });
+  },
+  deletePost: async ({ userId, postId }) => {
+    await Post.destroy({ where: { id: postId, userId: userId } });
+    return postId;
   },
   createUser: async ({ email, password }) => {
-    var user = await User.create({email: email, password: password})
-    console.log(user)
-    return user;
+    return await User.create({email: email, password: password});
   },
 };
 
-const app = express()
+const app = express();
 
-app.use(cors()) // enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
+// Enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
+// In practice we'd want to restrict the origin, but keeping it simple for now
+app.use(cors());
 
 app.use('/graphql', graphqlHTTP({
   schema: schema,
@@ -87,12 +108,12 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.use('/', routes)
-app.use('/tweet', passport.authenticate('jwt', { session: false }), secureRoutes)
+app.use('/', routes);
+app.use('/tweet', passport.authenticate('jwt', { session: false }), secureRoutes);
 
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({ error: err });
 });
 
-app.listen(8080, function() { console.log('Node server listening on port 8080')})
+app.listen(8080, function() { console.log('Node server listening on port 8080')});
