@@ -17,7 +17,6 @@ app.use('/', routes)
 app.use('/tweet', passport.authenticate('jwt', { session: false }), secureRoutes)
 
 app.use(function(err, req, res, next) {
-  console.log(err, req, res, next)
   res.status(err.status || 500);
   res.json({ error: err });
 });

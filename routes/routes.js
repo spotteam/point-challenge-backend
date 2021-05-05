@@ -21,23 +21,19 @@ router.post(
     passport.authenticate(
       'login',
       async (err, user, info) => {
-        console.log("loggggin")
         try {
           if (err || !user) {
             const error = new Error('An error occurred.');
-
             return next(error);
           }
-
+          console.log("line 30")
           req.login(
             user,
             { session: false },
             async (error) => {
               if (error) return next(error);
-
               const body = { _id: user._id, email: user.email };
               const token = jwt.sign({ user: body }, 'TOP_SECRET'); // update this TOP_SECRET with a key
-
               return res.json({ token });
             }
           );
