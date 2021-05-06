@@ -5,7 +5,8 @@ The backend was built using Express.js (a Node.js web framework) and GraphQL for
 There are 3 API Endpoints:
 
 * /signup
-  * This endpoint accepts a POST request with a JSON body of the format: {email: example@example.com, password:$3cUr3Pa$$w0rd123 }
+  * This endpoint accepts a POST request with a JSON body of the format:
+    * `{email: example@example.com, password:$3cUr3Pa$$w0rd123 }`
 * /login
   * This endpoint accepts a POST request with a JSON body of the format:
     * `{email: example@example.com, password: $3cUr3Pa$$w0rd123}`
