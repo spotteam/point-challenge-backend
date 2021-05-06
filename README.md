@@ -8,7 +8,7 @@ There are 3 API Endpoints:
   * This endpoint accepts a POST request with a JSON body of the format: {email: example@example.com, password:$3cUr3Pa$$w0rd123 }
 * /login
   * This endpoint accepts a POST request with a JSON body of the format:
-  `{email: example@example.com, password: $3cUr3Pa$$w0rd123}`
+    * `{email: example@example.com, password: $3cUr3Pa$$w0rd123}`
   * /secure/graphql
     * This endpoint accepts a POST request. It must have an “Authorization” header field with a value of the format: Bearer \<jwt token\>
       * \<jwt token\> should be the value of “token” returned as a response from /login. The body of this request must contain a valid GraphQL query.
@@ -18,7 +18,9 @@ There are 3 API Endpoints:
       * editPost - this takes a variable “content” and “postId” and updates the given post if it belongs to the given user with the provided content
       * deletePost - this takes a variable “postId” and deletes the given post if it belongs to the given user.
     * Examples:
-`query { posts { id createdAt content } }
+
+```
+query { posts { id createdAt content } }
 mutation CreatePost($content: String) {
     createPost(content: $content) {
       id
@@ -37,7 +39,8 @@ mutation EditPost($postId: Int, $content: String) {
 
 mutation DeletePost($postId: Int) {
     deletePost(postId: $postId)
-  }`
+  }
+```
 
 We chose to use a regular (non-GraphQL) API design for our signup and login functionality because it simplified our GraphQL logic for “secure” endpoints. Secure endpoints don’t need to have authentication information in the body of the GraphQL query. Rather, they just need a valid JWT in the authorization header to identify which user is authorizing the request.
 
