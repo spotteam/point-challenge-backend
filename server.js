@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const { User, Post } = require('./models');
+var { bodyParser } = require('body-parser');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema, GraphQLScalarType } = require('graphql');
 const cors = require('cors');
