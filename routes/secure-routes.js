@@ -7,6 +7,7 @@ const { User, Post } = require('../models');
 var schema = buildSchema(`
   type Query {
     posts: [Post]
+    user: User
   }
 
   type Mutation {
@@ -53,9 +54,16 @@ const resolverMap = {
 var root = {
   posts: async (obj, args, context) => {
     return await Post.findAll({
-      'where': {
+      where: {
         userId: args.user.id
-      }
+      },
+    });
+  },
+  user: async (obj, args, context) => {
+    return await User.findOne({
+      where: {
+        id: args.user.id
+      },
     });
   },
   createPost: async (obj, args, context) => {
@@ -69,8 +77,6 @@ var root = {
           id: obj.postId,
           userId: args.user.id
         },
-        returning: true,
-        plain: true,
       }
     ).catch(e => {
       // Swallow errors

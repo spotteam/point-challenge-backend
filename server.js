@@ -25,7 +25,6 @@ app.use('/secure', passport.authenticate('jwt', { session: false }), secureRoute
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({ error: err });
-  console.log(err)
 });
 
 app.listen(process.env.PORT || 8080, function() { console.log('Node server listening on a port')});
