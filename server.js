@@ -120,4 +120,4 @@ app.use(function(err, req, res, next) {
   console.log(err)
 });
 
-app.listen(8080, function() { console.log('Node server listening on port 8080')});
+app.listen(process.env.PORT || 8080, function() { console.log('Node server listening on a port')});
