@@ -20,7 +20,7 @@ app.use(bodyParser.json()) // middleware to parse application/json requests
 app.use(cors()) // enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
 
 app.use('/', routes);
-app.use('/posts', passport.authenticate('jwt', { session: false }), secureRoutes);
+app.use('/secure', passport.authenticate('jwt', { session: false }), secureRoutes);
 
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);

@@ -59,14 +59,14 @@ var root = {
     });
   },
   createPost: async (obj, args, context) => {
-    return await Post.create({userId: args.user.id, content: content});
+    return await Post.create({userId: args.user.id, content: obj.content});
   },
   editPost: async (obj, args, context) => {
     await Post.update(
-      { content: content },
+      { content: obj.content },
       {
         where: {
-          id: postId,
+          id: obj.postId,
           userId: args.user.id
         },
         returning: true,
@@ -77,10 +77,10 @@ var root = {
       // In practice we'd want to log and monitor these errors and maybe
       // present the user with an error message
     });
-    return await Post.findOne({ where: { id: postId, userId: args.user.id } });
+    return await Post.findOne({ where: { id: obj.postId, userId: args.user.id } });
   },
   deletePost: async (obj, args, context) => {
-    await Post.destroy({ where: { id: postId, userId: args.user.id } });
+    await Post.destroy({ where: { id: obj.postId, userId: args.user.id } });
     return postId;
   },
 };
