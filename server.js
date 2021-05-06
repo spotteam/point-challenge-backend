@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const { User, Post } = require('./models');
-var { bodyParser } = require('body-parser');
+const bodyParser = require('body-parser');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema, GraphQLScalarType } = require('graphql');
 const cors = require('cors');
@@ -9,6 +9,7 @@ const cors = require('cors');
 require('./auth/auth');
 const routes = require('./routes/routes');
 const secureRoutes = require('./routes/secure-routes');
+
  
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -98,7 +99,10 @@ var root = {
 };
 
 const app = express()
+
+
 app.use(bodyParser.json()) // middleware to parse application/json requests
+
 app.use(cors()) // enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
 
 app.use('/graphql', graphqlHTTP({
