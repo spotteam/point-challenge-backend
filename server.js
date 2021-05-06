@@ -78,7 +78,7 @@ var root = {
 };
 
 const app = express()
-
+app.use(bodyParser.json()) // middleware to parse application/json requests
 app.use(cors()) // enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
 
 app.use('/graphql', graphqlHTTP({
@@ -93,6 +93,7 @@ app.use('/tweet', passport.authenticate('jwt', { session: false }), secureRoutes
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({ error: err });
+  console.log(err)
 });
 
 app.listen(8080, function() { console.log('Node server listening on port 8080')})

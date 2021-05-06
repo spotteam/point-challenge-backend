@@ -18,13 +18,17 @@ router.post(
 router.post(
   '/login',
   async (req, res, next) => {
+    console.log(req)
     passport.authenticate(
       'login',
       async (err, user, info) => {
         try {
-          if (err || !user) {
+          if (err) {
             const error = new Error('An error occurred.');
             return next(error);
+          }
+          else if (!user) {
+            return res.json(403, {error: 'No such user exists.'})
           }
           req.login(
             user,
