@@ -51,20 +51,23 @@ const resolverMap = {
  
 // The root provides a resolver function for each API endpoint
 var root = {
-  posts: async params => {
-    console.log("contextttt", params)
-    return await Post.findAll({});
+  posts: async (obj, args, context) => {
+    return await Post.findAll({
+      'where': {
+        userId: args.user.id
+      }
+    });
   },
-  createPost: async ({ context, content }) => {
-    return await Post.create({userId: context.user.id, content: content});
+  createPost: async (obj, args, context) => {
+    return await Post.create({userId: args.user.id, content: content});
   },
-  editPost: async ({ context, postId, content }) => {
+  editPost: async (obj, args, context) => {
     await Post.update(
       { content: content },
       {
         where: {
           id: postId,
-          userId: context.user.id
+          userId: args.user.id
         },
         returning: true,
         plain: true,
@@ -74,31 +77,29 @@ var root = {
       // In practice we'd want to log and monitor these errors and maybe
       // present the user with an error message
     });
-    return await Post.findOne({ where: { id: postId, userId: context.user.id } });
+    return await Post.findOne({ where: { id: postId, userId: args.user.id } });
   },
-  deletePost: async ({ context, postId }) => {
-    await Post.destroy({ where: { id: postId, userId: context.user.id } });
+  deletePost: async (obj, args, context) => {
+    await Post.destroy({ where: { id: postId, userId: args.user.id } });
     return postId;
   },
 };
 
 router.post(
   '/graphql',
-  (req, res, next) => {
-    console.log(req.user)
-    graphqlHTTP({
-      schema: schema,
+  graphqlHTTP((req, res, graphQLParams) => {
+    return {
+      schema,
       rootValue: root,
       graphiql: true,
-    })
-  }
-   
+      context: {user: req.user}
+    }
+  })   
 );
 
 router.get(
   '/profile',
   (req, res, next) => {
-    console.log("got inside")
     res.json({
       message: 'You made it to the secure route',
       user: req.user,

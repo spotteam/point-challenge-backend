@@ -15,16 +15,9 @@ const secureRoutes = require('./routes/secure-routes');
 
 const app = express()
 
-
 app.use(bodyParser.json()) // middleware to parse application/json requests
 
 app.use(cors()) // enable `cors` to set HTTP response header: Access-Control-Allow-Origin: *
-
-// app.use('/graphql', graphqlHTTP({
-//   schema: schema,
-//   rootValue: root,
-//   graphiql: true,
-// }));
 
 app.use('/', routes);
 app.use('/posts', passport.authenticate('jwt', { session: false }), secureRoutes);
