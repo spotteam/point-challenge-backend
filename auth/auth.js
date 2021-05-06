@@ -44,3 +44,25 @@ passport.use(
     }
   )
 );
+
+
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+
+passport.use(
+  new JWTstrategy(
+    {
+      secretOrKey: 'TOP_SECRET',
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
+    },
+    async (token, done) => {
+      console.log(token.user)
+      try {
+        return done(null, token.user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+

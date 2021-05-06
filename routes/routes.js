@@ -34,7 +34,7 @@ router.post(
             { session: false },
             async (error) => {
               if (error) return next(error);
-              const body = { _id: user._id, email: user.email };
+              const body = { id: user.id, email: user.email };
               const token = jwt.sign({ user: body }, 'TOP_SECRET'); // update this TOP_SECRET with a key
               return res.json({ token });
             }
@@ -45,26 +45,6 @@ router.post(
       }
     )(req, res, next);
   }
-);
-
-
-const JWTstrategy = require('passport-jwt').Strategy;
-const ExtractJWT = require('passport-jwt').ExtractJwt;
-
-passport.use(
-  new JWTstrategy(
-    {
-      secretOrKey: 'TOP_SECRET',
-      jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
-    },
-    async (token, done) => {
-      try {
-        return done(null, token.user);
-      } catch (error) {
-        done(error);
-      }
-    }
-  )
 );
 
 module.exports = router;
