@@ -14,7 +14,13 @@ passport.use(
         const user = await User.create({ email, password });
         return done(null, user);
       } catch (error) {
-        done(error)
+        if (error.original.errno === 19) {
+          done({
+            status: 400,
+            message: 'Email already in use.'
+          })
+        }
+        
       }
     }
   )
